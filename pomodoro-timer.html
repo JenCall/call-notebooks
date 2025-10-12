@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+
+        .session-type {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .focus {
+            color: #ff6b6b;
+        }
+
+        .break {
+            color: #4ecdc4;
+        }
+
+        .controls {
+            margin: 30px 0;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            margin: 0 10px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            transition: width 1s linear;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pomodoro Timer</h1>
+
+        <div class="session-type" id="sessionType">Focus Session</div>
+
+        <div class="timer-display" id="timerDisplay">25:00</div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        class PomodoroTimer {
+            constructor() {
+                this.focusTime = 25 * 60; // 25 minutes in seconds
+                this.breakTime = 10 * 60; // 10 minutes in seconds
+                this.currentTime = this.focusTime;
+                this.totalTime = this.focusTime;
+                this.isRunning = false;
+                this.isFocusSession = true;
+                this.interval = null;
+
+                this.timerDisplay = document.getElementById('timerDisplay');
+                this.sessionType = document.getElementById('sessionType');
+                this.progressFill = document.getElementById('progressFill');
+                this.startBtn = document.getElementById('startBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+
+                this.bindEvents();
+                this.updateDisplay();
+            }
+
+            bindEvents() {
+                this.startBtn.addEventListener('click', () => this.start());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.resetBtn.addEventListener('click', () => this.reset());
+            }
+
+            start() {
+                if (!this.isRunning) {
+                    this.isRunning = true;
+                    this.startBtn.disabled = true;
+                    this.pauseBtn.disabled = false;
+
+                    this.interval = setInterval(() => {
+                        this.currentTime--;
+                        this.updateDisplay();
+
+                        if (this.currentTime <= 0) {
+                            this.switchSession();
+                        }
+                    }, 1000);
+                }
+            }
+
+            pause() {
+                this.isRunning = false;
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                clearInterval(this.interval);
+            }
+
+            reset() {
+                this.pause();
+                this.isFocusSession = true;
+                this.currentTime = this.focusTime;
+                this.totalTime = this.focusTime;
+                this.updateDisplay();
+                this.updateSessionType();
+            }
+
+            switchSession() {
+                this.pause();
+                this.isFocusSession = !this.isFocusSession;
+
+                if (this.isFocusSession) {
+                    this.currentTime = this.focusTime;
+                    this.totalTime = this.focusTime;
+                } else {
+                    this.currentTime = this.breakTime;
+                    this.totalTime = this.breakTime;
+                }
+
+                this.updateDisplay();
+                this.updateSessionType();
+
+                // Auto-start next session
+                setTimeout(() => this.start(), 1000);
+            }
+
+            updateDisplay() {
+                const minutes = Math.floor(this.currentTime / 60);
+                const seconds = this.currentTime % 60;
+                this.timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                // Update progress bar
+                const progress = ((this.totalTime - this.currentTime) / this.totalTime) * 100;
+                this.progressFill.style.width = `${progress}%`;
+            }
+
+            updateSessionType() {
+                if (this.isFocusSession) {
+                    this.sessionType.textContent = 'Focus Session';
+                    this.sessionType.className = 'session-type focus';
+                } else {
+                    this.sessionType.textContent = 'Break Time';
+                    this.sessionType.className = 'session-type break';
+                }
+            }
+        }
+
+        // Initialize the timer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PomodoroTimer();
+        });
+    </script>
+</body>
+</html>
