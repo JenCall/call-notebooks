@@ -12,228 +12,265 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
+            background: white;
+            padding: 3rem 2rem;
             border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            min-width: 400px;
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .mode-display {
+            font-size: 1.2rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .mode-display.break {
+            color: #27ae60;
         }
 
         .timer-display {
-            font-size: 4rem;
+            font-size: 5rem;
             font-weight: bold;
-            margin: 30px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            font-family: 'Courier New', monospace;
-        }
-
-        .session-type {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .focus {
-            color: #ff6b6b;
-        }
-
-        .break {
-            color: #4ecdc4;
+            color: #333;
+            margin: 2rem 0;
+            font-variant-numeric: tabular-nums;
         }
 
         .controls {
-            margin: 30px 0;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
         }
 
         button {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 15px 30px;
-            margin: 0 10px;
-            border-radius: 50px;
+            padding: 1rem 2rem;
             font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        button:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .start-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .start-btn:hover {
+            background: #5568d3;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        button:active {
-            transform: translateY(0);
+        .pause-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        .pause-btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .reset-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
         }
 
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        button:disabled:hover {
+            transform: none;
         }
 
         .progress-bar {
-            width: 300px;
+            width: 100%;
             height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            margin: 20px auto;
+            background: #ecf0f1;
+            border-radius: 10px;
             overflow: hidden;
+            margin-bottom: 1rem;
         }
 
-        .progress-fill {
+        .progress {
             height: 100%;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             transition: width 1s linear;
-            border-radius: 4px;
+        }
+
+        .progress.break {
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .session-count {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 1rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Pomodoro Timer</h1>
-
-        <div class="session-type" id="sessionType">Focus Session</div>
-
-        <div class="timer-display" id="timerDisplay">25:00</div>
-
+        <div class="mode-display" id="modeDisplay">Focus Time</div>
         <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
+            <div class="progress" id="progressBar"></div>
         </div>
-
+        <div class="timer-display" id="timerDisplay">25:00</div>
         <div class="controls">
-            <button id="startBtn">Start</button>
-            <button id="pauseBtn">Pause</button>
-            <button id="resetBtn">Reset</button>
+            <button class="start-btn" id="startBtn">Start</button>
+            <button class="pause-btn" id="pauseBtn" disabled>Pause</button>
+            <button class="reset-btn" id="resetBtn">Reset</button>
         </div>
+        <div class="session-count" id="sessionCount">Sessions completed: 0</div>
     </div>
 
     <script>
-        class PomodoroTimer {
-            constructor() {
-                this.focusTime = 25 * 60; // 25 minutes in seconds
-                this.breakTime = 10 * 60; // 10 minutes in seconds
-                this.currentTime = this.focusTime;
-                this.totalTime = this.focusTime;
-                this.isRunning = false;
-                this.isFocusSession = true;
-                this.interval = null;
+        const FOCUS_TIME = 25 * 60; // 25 minutes in seconds
+        const BREAK_TIME = 10 * 60; // 10 minutes in seconds
 
-                this.timerDisplay = document.getElementById('timerDisplay');
-                this.sessionType = document.getElementById('sessionType');
-                this.progressFill = document.getElementById('progressFill');
-                this.startBtn = document.getElementById('startBtn');
-                this.pauseBtn = document.getElementById('pauseBtn');
-                this.resetBtn = document.getElementById('resetBtn');
+        let timeRemaining = FOCUS_TIME;
+        let totalTime = FOCUS_TIME;
+        let timerInterval = null;
+        let isRunning = false;
+        let isFocusMode = true;
+        let sessionsCompleted = 0;
 
-                this.bindEvents();
-                this.updateDisplay();
+        const timerDisplay = document.getElementById('timerDisplay');
+        const modeDisplay = document.getElementById('modeDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressBar = document.getElementById('progressBar');
+        const sessionCount = document.getElementById('sessionCount');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            timerDisplay.textContent = formatTime(timeRemaining);
+            const progress = ((totalTime - timeRemaining) / totalTime) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function playSound() {
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function switchMode() {
+            isFocusMode = !isFocusMode;
+
+            if (isFocusMode) {
+                totalTime = FOCUS_TIME;
+                timeRemaining = FOCUS_TIME;
+                modeDisplay.textContent = 'Focus Time';
+                modeDisplay.classList.remove('break');
+                progressBar.classList.remove('break');
+            } else {
+                totalTime = BREAK_TIME;
+                timeRemaining = BREAK_TIME;
+                modeDisplay.textContent = 'Break Time';
+                modeDisplay.classList.add('break');
+                progressBar.classList.add('break');
+                sessionsCompleted++;
+                sessionCount.textContent = `Sessions completed: ${sessionsCompleted}`;
             }
 
-            bindEvents() {
-                this.startBtn.addEventListener('click', () => this.start());
-                this.pauseBtn.addEventListener('click', () => this.pause());
-                this.resetBtn.addEventListener('click', () => this.reset());
-            }
+            updateDisplay();
+        }
 
-            start() {
-                if (!this.isRunning) {
-                    this.isRunning = true;
-                    this.startBtn.disabled = true;
-                    this.pauseBtn.disabled = false;
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
 
-                    this.interval = setInterval(() => {
-                        this.currentTime--;
-                        this.updateDisplay();
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    updateDisplay();
 
-                        if (this.currentTime <= 0) {
-                            this.switchSession();
-                        }
-                    }, 1000);
-                }
-            }
-
-            pause() {
-                this.isRunning = false;
-                this.startBtn.disabled = false;
-                this.pauseBtn.disabled = true;
-                clearInterval(this.interval);
-            }
-
-            reset() {
-                this.pause();
-                this.isFocusSession = true;
-                this.currentTime = this.focusTime;
-                this.totalTime = this.focusTime;
-                this.updateDisplay();
-                this.updateSessionType();
-            }
-
-            switchSession() {
-                this.pause();
-                this.isFocusSession = !this.isFocusSession;
-
-                if (this.isFocusSession) {
-                    this.currentTime = this.focusTime;
-                    this.totalTime = this.focusTime;
-                } else {
-                    this.currentTime = this.breakTime;
-                    this.totalTime = this.breakTime;
-                }
-
-                this.updateDisplay();
-                this.updateSessionType();
-
-                // Auto-start next session
-                setTimeout(() => this.start(), 1000);
-            }
-
-            updateDisplay() {
-                const minutes = Math.floor(this.currentTime / 60);
-                const seconds = this.currentTime % 60;
-                this.timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-                // Update progress bar
-                const progress = ((this.totalTime - this.currentTime) / this.totalTime) * 100;
-                this.progressFill.style.width = `${progress}%`;
-            }
-
-            updateSessionType() {
-                if (this.isFocusSession) {
-                    this.sessionType.textContent = 'Focus Session';
-                    this.sessionType.className = 'session-type focus';
-                } else {
-                    this.sessionType.textContent = 'Break Time';
-                    this.sessionType.className = 'session-type break';
-                }
+                    if (timeRemaining <= 0) {
+                        playSound();
+                        pauseTimer();
+                        switchMode();
+                    }
+                }, 1000);
             }
         }
 
-        // Initialize the timer when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new PomodoroTimer();
-        });
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            isFocusMode = true;
+            totalTime = FOCUS_TIME;
+            timeRemaining = FOCUS_TIME;
+            modeDisplay.textContent = 'Focus Time';
+            modeDisplay.classList.remove('break');
+            progressBar.classList.remove('break');
+            updateDisplay();
+        }
+
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+        // Initialize display
+        updateDisplay();
     </script>
 </body>
 </html>
